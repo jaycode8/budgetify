@@ -1,7 +1,17 @@
+import SignIn from "./screens/auth/SignIn.jsx";
+import {Route, Routes} from "react-router-dom";
+import SignUp from "./screens/auth/SignUp.jsx";
+import Landing from "./Landing.jsx";
 
 const App = () => {
     return (
-        <p className="bg-red-500">hey</p>
+        <div>
+            <Routes>
+                <Route path="/" element={<Landing/>} />
+                <Route path="/signin" element={<SignIn/>} />
+                <Route path="/signup" element={<SignUp/>} />
+            </Routes>
+        </div>
     )
 }
 
