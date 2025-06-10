@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {Eye, EyeOff, Lock, ArrowRight, User} from 'lucide-react';
 import {Link} from "react-router-dom";
 import axios from "axios";
+import toast, { Toaster } from 'react-hot-toast';
 
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -9,14 +10,16 @@ const SignIn = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [credentials, setCredentials] = useState({
         username: '',
-        password: ''
+        password: '',
+        remember_me: false
     });
     const [isLoading, setIsLoading] = useState(false);
 
     const handleInputChange = (e) => {
+        const { name, type, value, checked } = e.target;
         setCredentials({
             ...credentials,
-            [e.target.name]: e.target.value
+            [name]: type === 'checkbox' ? checked : value,
         });
     };
 
@@ -24,22 +27,29 @@ const SignIn = () => {
         e.preventDefault();
         try {
             setIsLoading(true);
-            const response = await axios.post(`${api_url}/users/login/`, credentials);
-            localStorage.setItem('budgetifyAccessToken', response.data.access);
+            const response = await axios.post(`${api_url}/users/auth/`, credentials);
+            localStorage.setItem('budgetifyAccessToken', response.data.token);
+            setTimeout(() => {
+                toast.success("Successfully logged In... Redirecting");
+            }, 1500)
             setTimeout(() => {
                 location.href = '/dashboard';
             }, 2500);
         }catch (e) {
-            console.log(e);
+            setTimeout(()=>{
+                toast.error(e.status === 404 ? "User with that email does not exist" : "Incorrect password");
+            },1500)
+
         }finally {
             setTimeout(()=>{
                 setIsLoading(false);
-            },[2000])
+            },2000)
         }
     };
 
     return (
         <div className="min-h-dvh flex">
+            <Toaster />
             <div className="hidden lg:flex lg:w-[70%] relative overflow-hidden" style={{backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),url("/images/signin.jpeg")`}}></div>
             <div className="w-full h-dvh lg:w-[30%] flex items-center justify-center p-8 bg-white relative">
                 <div className="w-full max-w-md space-y-8 h-full flex items-center justify-center flex-col">
@@ -109,12 +119,14 @@ const SignIn = () => {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <input
-                                    id="remember-me"
-                                    name="remember-me"
+                                    id="remember_me"
+                                    name="remember_me"
                                     type="checkbox"
+                                    checked={credentials.remember_me}
+                                    onChange={handleInputChange}
                                     className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                                 />
-                                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                                <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-700">
                                     Remember me
                                 </label>
                             </div>

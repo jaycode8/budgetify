@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Eye, EyeOff, Lock, ArrowRight, User, Mail, Phone, UserCheck } from 'lucide-react';
 import {Link, useNavigate} from "react-router-dom";
 import axios from "axios";
+import toast, { Toaster } from 'react-hot-toast';
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
 
 const api_url = import.meta.env.VITE_API_URL;
 
@@ -31,20 +34,29 @@ const SignUp = () => {
         try {
             setIsLoading(true);
             await axios.post(`${api_url}/users/register/`, formData);
+
+            setTimeout(() => {
+                toast.success("User created successfully!");
+            }, 1000)
+
             setTimeout(() => {
                 navigate('/signin');
             }, 2500);
         }catch (e) {
-            console.log(e);
+            // console.log(Object.values(e.response.data)[0][0]);
+            setTimeout(()=>{
+                toast.error(e.status === 500 ? "Could not complete action. Try again later!" : Object.values(e.response.data)[0][0]);
+            },1500)
         }finally {
             setTimeout(()=>{
                 setIsLoading(false);
-            },[2000])
+            },2000)
         }
     };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center p-4">
+            <Toaster />
             <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden">
                 <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-12 text-center">
                     <div className="flex items-center justify-center mb-6">
@@ -159,19 +171,22 @@ const SignUp = () => {
                                 <label htmlFor="phone_number" className="block text-sm font-medium text-gray-700">
                                     Phone Number *
                                 </label>
-                                <div className="relative">
+                                <div className="relative py-[0.12rem] border border-gray-300 rounded-lg bg-gray-50">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <Phone className="h-5 w-5 text-gray-400" />
                                     </div>
-                                    <input
+                                    <PhoneInput
                                         id="phone_number"
                                         name="phone_number"
-                                        type="tel"
-                                        required
+                                        defaultCountry="ke"
                                         value={formData.phone_number}
-                                        onChange={handleInputChange}
-                                        className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-200 bg-gray-50 hover:bg-white"
-                                        placeholder="0712345678"
+                                        onChange={(phone) =>
+                                            setFormData({
+                                                ...formData,
+                                                phone_number: phone,
+                                            })
+                                        }
+                                        className="block group w-full pl-10 pr-0 py-1 borders rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-200 bg-transparent"
                                     />
                                 </div>
                             </div>
