@@ -55,7 +55,7 @@ const SignUp = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center p-4">
+        <div className="min-h-dvh bg-gradient-to-br from-red-50 via-white to-red-50 flex items-center justify-center p-4">
             <Toaster />
             <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden">
                 <div className="bg-gradient-to-r from-red-600 to-red-700 px-8 py-12 text-center">
