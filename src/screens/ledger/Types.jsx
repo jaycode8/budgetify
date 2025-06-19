@@ -27,21 +27,21 @@ const Types = ({setShowTypeModal, showTypeModal}) =>{
         event.preventDefault();
         try{
             const config = {headers:{Authorization: `Bearer ${token}`}};
-            type.slug ? await axios.patch(`${api_url}/ledger/types/${type.slug}/`, type, config) : await axios.post(`${api_url}/ledger/types/`, type, config)
+            type.id ? await axios.patch(`${api_url}/ledger/types/${type.id}/`, type, config) : await axios.post(`${api_url}/ledger/types/`, type, config)
             setTimeout(()=>{
                 fetchTypes();
-                setType({ name: "", slug:"", description: ""});
-                toast.success(type.slug ? "Successfully updated type" : "Successfully added a new type");
+                setType({ name: "", description: ""});
+                toast.success(type.id ? "Successfully updated type" : "Successfully added a new type");
             }, 1000)
         }catch (e) {
             console.log(e)
         }
     }
 
-    const handleDelete = async (slugId) =>{
+    const handleDelete = async (id) =>{
         try {
             if(confirm("Sure to delete type")){
-                await axios.delete(`${api_url}/ledger/types/${slugId}/`, {
+                await axios.delete(`${api_url}/ledger/types/${id}/`, {
                     headers:{
                         Authorization: `Bearer ${token}`
                     }
@@ -78,12 +78,12 @@ const Types = ({setShowTypeModal, showTypeModal}) =>{
 
                 <form className="mb-6 p-4 bg-red-200/50 rounded-xl" onSubmit={(e) => handleSubmit(e)}>
                     <h3 className="text-lg font-medium mb-4">
-                        {type.slug? "Update Type" : "Add New Type"}
+                        {type.id? "Update Type" : "Add New Type"}
                     </h3>
 
                     <div className="grid gap-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">{type.slug? "Update name" : "Name *"}</label>
+                            <label className="block text-sm font-medium mb-2">{type.id? "Update name" : "Name *"}</label>
                             <input
                                 type="text"
                                 value={type.name}
@@ -94,7 +94,7 @@ const Types = ({setShowTypeModal, showTypeModal}) =>{
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-2">{type.slug? "Update description" : "Description *"}</label>
+                            <label className="block text-sm font-medium mb-2">{type.id? "Update description" : "Description *"}</label>
                             <textarea
                                 value={type.description}
                                 onChange={(e) => setType({...type, description: e.target.value})}
@@ -110,14 +110,14 @@ const Types = ({setShowTypeModal, showTypeModal}) =>{
                             type="submit"
                             className="flex-1 bg-gradient-to-r from-red-600 to-red-700 shadow-lg text-white py-2 rounded-lg font-medium"
                         >
-                            {type.slug? "Update " : "Add "}
+                            {type.id? "Update " : "Add "}
                             Type
                         </button>
 
                         <button
                             type="button"
                             className="px-4 py-2 bg-slate-600 text-white rounded-lg"
-                            onClick={() => setType({name: "", slug: "", description: ""})}
+                            onClick={() => setType({name: "", id: "", description: ""})}
                         >
                             Cancel
                         </button>
@@ -134,21 +134,19 @@ const Types = ({setShowTypeModal, showTypeModal}) =>{
                                     <span className="text-sm">{type.description}</span>
                                 </div>
 
-                                { !type.is_default &&
-                                    <div className="flex gap-2 absolute top-1 right-1">
-                                        <button
-                                            onClick={() => setType(type)}
-                                            className="p-2 text-slate-400 hover:text-emerald-400 transition-colors"
-                                        >
-                                            <Edit2 className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            className="p-2 text-slate-400 hover:text-red-400 transition-colors"
-                                        >
-                                            <Trash2 className="w-4 h-4" onClick={() => handleDelete(type.slug)}/>
-                                        </button>
-                                    </div>
-                                }
+                                <div className="flex gap-2 absolute top-1 right-1">
+                                    <button
+                                        onClick={() => setType(type)}
+                                        className="p-2 text-slate-400 hover:text-emerald-400 transition-colors"
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" onClick={() => handleDelete(type.id)}/>
+                                    </button>
+                                </div>
 
                             </div>
                         ))}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Plus, Minus, Settings, Edit2, Trash2, X, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 import Category from "./Category.jsx";
 import Types from "./Types.jsx";
+import Transactions from "./Transactions.jsx";
 
 const Ledger = () => {
     const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -68,7 +69,7 @@ const Ledger = () => {
                 </div>
 
                 {showTransactionForm && (
-                    <div></div>
+                    <Transactions setShowTransactionModal={setShowTransactionForm} showTransactionModal={showTransactionForm} />
                 )}
 
                 {showTypeModal && (

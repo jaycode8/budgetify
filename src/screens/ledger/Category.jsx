@@ -27,21 +27,23 @@ const Category = ({setShowCategoryModal, showCategoryModal}) =>{
         event.preventDefault();
         try{
             const config = {headers:{Authorization: `Bearer ${token}`}};
-            category.slug ? await axios.patch(`${api_url}/ledger/categories/${category.slug}/`, category, config) : await axios.post(`${api_url}/ledger/categories/`, category, config)
+            category.id ? await axios.patch(`${api_url}/ledger/categories/${category.id}/`, category, config) : await axios.post(`${api_url}/ledger/categories/`, category, config)
             setTimeout(()=>{
                 fetchCategories();
-                setCategory({ name: "", slug:""});
-                toast.success(category.slug ? "Successfully updated category" : "Successfully added a new category");
+                setCategory({ name: ""});
+                toast.success(category.id ? "Successfully updated category" : "Successfully added a new category");
             }, 1000)
         }catch (e) {
             console.log(e)
         }
     }
 
-    const handleDelete = async (slugId) =>{
+    const handleDelete = async (id) =>{
         try {
             if(confirm("Sure to delete category")){
-                await axios.delete(`${api_url}/ledger/categories/${slugId}/`);
+                await axios.delete(`${api_url}/ledger/categories/${id}/`, {
+                    headers:{Authorization: `Bearer ${token}`}
+                });
                 setTimeout(()=>{
                     fetchCategories();
                     toast.success("Successfully deleted category!");
@@ -74,12 +76,12 @@ const Category = ({setShowCategoryModal, showCategoryModal}) =>{
 
                 <form className="mb-6 p-4 bg-red-200/50 rounded-xl" onSubmit={(e) => handleSubmit(e)}>
                     <h3 className="text-lg font-medium mb-4">
-                        {category.slug? "Update Category" : "Add New Category"}
+                        {category.id? "Update Category" : "Add New Category"}
                     </h3>
 
                     <div className="grid gap-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">{category.slug? "Update name" : "Category name *"}</label>
+                            <label className="block text-sm font-medium mb-2">{category.id? "Update name" : "Category name *"}</label>
                             <input
                                 type="text"
                                 value={category.name}
@@ -96,14 +98,14 @@ const Category = ({setShowCategoryModal, showCategoryModal}) =>{
                             type="submit"
                             className="flex-1 bg-gradient-to-r from-red-600 to-red-700 shadow-lg text-white py-2 rounded-lg font-medium"
                         >
-                            {category.slug? "Update " : "Add "}
+                            {category.id? "Update " : "Add "}
                             Category
                         </button>
 
                         <button
                             type="button"
                             className="px-4 py-2 bg-slate-600 text-white rounded-lg"
-                            onClick={() => setCategory({name: "", slug: ""})}
+                            onClick={() => setCategory({name: "", id: ""})}
                         >
                             Cancel
                         </button>
@@ -119,21 +121,19 @@ const Category = ({setShowCategoryModal, showCategoryModal}) =>{
                                     <span className="font-medium">{category.name}</span>
                                 </div>
 
-                                { !category.is_default &&
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => setCategory(category)}
-                                            className="p-2 text-slate-400 hover:text-emerald-400 transition-colors"
-                                        >
-                                            <Edit2 className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            className="p-2 text-slate-400 hover:text-red-400 transition-colors"
-                                        >
-                                            <Trash2 className="w-4 h-4" onClick={() => handleDelete(category.slug)}/>
-                                        </button>
-                                    </div>
-                                }
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setCategory(category)}
+                                        className="p-2 text-slate-400 hover:text-emerald-400 transition-colors"
+                                    >
+                                        <Edit2 className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+                                    >
+                                        <Trash2 className="w-4 h-4" onClick={() => handleDelete(category.id)}/>
+                                    </button>
+                                </div>
 
                             </div>
                         ))}
